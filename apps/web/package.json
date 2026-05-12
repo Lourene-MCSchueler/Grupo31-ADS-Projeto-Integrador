@@ -1,0 +1,8 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "echo 'Configure o frontend neste workspace'",
+    "build": "echo 'Configure o frontend neste workspace'"
+  }
+}
