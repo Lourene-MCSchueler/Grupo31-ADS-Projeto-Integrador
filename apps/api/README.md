@@ -18,9 +18,12 @@ apps/api/
 ├── src/
 │   ├── database.js      # Conexão e criação das tabelas
 │   ├── index.js         # Entry point — Express, sessão, rotas
+│   ├── middleware/
+│   │   └── auth.js      # Middleware de autenticação por sessão
 │   └── routes/
 │       ├── index.js     # Agrega todas as rotas
-│       └── auth.js      # Rotas de autenticação
+│       ├── auth.js      # Rotas de autenticação
+│       └── consultas.js # Rotas de consultas
 ├── banco.db             # Banco principal (gerado automaticamente)
 ├── sessoes.db           # Sessões (gerado automaticamente)
 └── package.json
@@ -80,4 +83,26 @@ API disponível em `http://localhost:3001`.
   "email": "ana@clinica.com",
   "senha": "123456"
 }
+```
+
+### Consultas
+
+Exige sessão ativa (login realizado).
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `GET` | `/api/consultas?data=YYYY-MM-DD` | Lista consultas do médico logado na data informada |
+
+**Exemplo de resposta:**
+```json
+[
+  {
+    "id": 1,
+    "data_hora": "2026-05-16T09:00",
+    "status": "agendada",
+    "paciente_id": 1,
+    "paciente_nome": "João Silva",
+    "paciente_telefone": "11991110001"
+  }
+]
 ```

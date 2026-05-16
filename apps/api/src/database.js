@@ -18,9 +18,11 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS pacientes (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
     nome      TEXT NOT NULL,
-    email     TEXT,
+    email     TEXT UNIQUE,
     telefone  TEXT
   );
+
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_pacientes_email ON pacientes(email);
 
   CREATE TABLE IF NOT EXISTS consultas (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
