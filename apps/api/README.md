@@ -23,7 +23,8 @@ apps/api/
 │   └── routes/
 │       ├── index.js     # Agrega todas as rotas
 │       ├── auth.js      # Rotas de autenticação
-│       └── consultas.js # Rotas de consultas
+│       ├── consultas.js # Rotas de consultas
+│       └── ausencias.js # Rotas de ausências
 ├── banco.db             # Banco principal (gerado automaticamente)
 ├── sessoes.db           # Sessões (gerado automaticamente)
 └── package.json
@@ -36,7 +37,7 @@ apps/api/
 | `medicos` | Médicos com login no sistema |
 | `pacientes` | Pacientes cadastrados |
 | `consultas` | Agendamentos vinculando médico e paciente |
-| `ausencias` | Registro de ausências de pacientes |
+| `ausencias` | Registro de ausências do médico por consulta |
 
 ## Como inicializar
 
@@ -106,3 +107,30 @@ Exige sessão ativa (login realizado).
   }
 ]
 ```
+
+### Ausências
+
+Exige sessão ativa (login realizado).
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| `POST` | `/api/ausencias` | Marca o médico como ausente em uma ou mais consultas e notifica os pacientes |
+
+O fluxo esperado é usar o retorno do `GET /consultas` para obter os IDs e enviá-los em lote.
+
+**Body:**
+```json
+{
+  "consulta_ids": [1, 2, 3]
+}
+```
+
+**Exemplo de resposta:**
+```json
+{
+  "mensagem": "Médico marcado como ausente. 3 paciente(s) notificado(s).",
+  "consulta_ids": [1, 2, 3]
+}
+```
+
+> A notificação de WhatsApp é simulada via `console.log`. Todas as consultas são atualizadas para `status = 'ausente'` em uma única transação.
