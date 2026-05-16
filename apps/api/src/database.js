@@ -38,6 +38,9 @@ db.exec(`
     consulta_id INTEGER NOT NULL REFERENCES consultas(id),
     criado_em   TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
   );
+
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_consultas_unica
+    ON consultas(paciente_id, medico_id, data_hora);
 `);
 
 module.exports = db;
