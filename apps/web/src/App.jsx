@@ -18,6 +18,12 @@ const statusTone = {
   ausente: 'warning',
 }
 
+const loginHighlights = [
+  { value: '4', label: 'etapas no fluxo' },
+  { value: '2min', label: 'para avisar pacientes' },
+  { value: 'LGPD', label: 'pronto para evoluir' },
+]
+
 async function request(path, options = {}) {
   const response = await fetch(path, {
     credentials: 'include',
@@ -112,8 +118,8 @@ function AppShell({ children }) {
   }
 
   const links = [
-    { to: '/dashboard', label: 'Painel', icon: '⌂' },
-    { to: '/agenda', label: 'Agenda', icon: '□' },
+    { to: '/dashboard', label: 'Painel', icon: 'P' },
+    { to: '/agenda', label: 'Agenda', icon: 'A' },
     { to: '/ausencia', label: 'Ausência', icon: '!' },
   ]
 
@@ -140,6 +146,11 @@ function AppShell({ children }) {
             </Link>
           ))}
         </nav>
+
+        <div className="sidebar-note">
+          <strong>Fluxo MVP</strong>
+          <p>Registre a ausência e deixe o sistema localizar os pacientes afetados.</p>
+        </div>
 
         <div className="doctor-card">
           <span className="avatar">{user.nome?.slice(0, 1) || 'M'}</span>
@@ -191,17 +202,51 @@ function Login() {
 
   return (
     <main className="login-page">
-      <section className="login-copy">
-        <span className="eyebrow">PoC Grupo 31</span>
-        <h1>Aplicativo de Comunicação para Ausência Médica</h1>
-        <p>
-          Registre ausências, identifique pacientes impactados e dispare a comunicação da clínica
-          sem depender de controles manuais.
-        </p>
-        <div className="benefit-row" aria-label="Benefícios do sistema">
-          <span>Agenda integrada</span>
-          <span>Notificação rápida</span>
-          <span>Menos falhas</span>
+      <section className="login-hero" aria-label="Resumo da solução">
+        <div className="login-copy">
+          <span className="eyebrow">PoC Grupo 31</span>
+          <h1>Ausência Médica</h1>
+          <p>
+            Uma central simples para registrar ausências, consultar a agenda e reduzir falhas na
+            comunicação com pacientes.
+          </p>
+          <div className="benefit-row" aria-label="Benefícios do sistema">
+            <span>Agenda integrada</span>
+            <span>Pacientes identificados</span>
+            <span>Notificação automatizada</span>
+          </div>
+        </div>
+
+        <div className="login-preview" aria-hidden="true">
+          <div className="preview-topbar">
+            <span />
+            <strong>Agenda de hoje</strong>
+            <small>2 consultas</small>
+          </div>
+          <div className="preview-row">
+            <span>09:00</span>
+            <div>
+              <strong>João Silva</strong>
+              <small>Aguardando atendimento</small>
+            </div>
+          </div>
+          <div className="preview-row active">
+            <span>11:00</span>
+            <div>
+              <strong>Maria Souza</strong>
+              <small>Paciente será avisado</small>
+            </div>
+          </div>
+          <div className="preview-action">Registrar ausência</div>
+        </div>
+
+        <div className="login-stats">
+          {loginHighlights.map((item) => (
+            <div key={item.label}>
+              <strong>{item.value}</strong>
+              <span>{item.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -209,6 +254,7 @@ function Login() {
         <div>
           <span className="eyebrow">Acesso médico</span>
           <h2>Entrar no sistema</h2>
+          <p>Use o usuário cadastrado pela clínica para acessar a agenda.</p>
         </div>
 
         <label>
@@ -217,6 +263,7 @@ function Login() {
             autoComplete="email"
             disabled={submitting}
             onChange={(event) => setEmail(event.target.value)}
+            placeholder="medico@clinica.com"
             type="email"
             value={email}
           />
@@ -228,6 +275,7 @@ function Login() {
             autoComplete="current-password"
             disabled={submitting}
             onChange={(event) => setSenha(event.target.value)}
+            placeholder="Digite sua senha"
             type="password"
             value={senha}
           />
@@ -329,7 +377,7 @@ function useAppointments(date) {
     loadAppointments(date)
   }, [date, loadAppointments])
 
-  return { appointments, loading, error, reload: loadAppointments, setAppointments }
+  return { appointments, loading, error, reload: loadAppointments }
 }
 
 function Dashboard() {
@@ -347,7 +395,7 @@ function Dashboard() {
       />
 
       <section className="metric-grid" aria-label="Resumo da agenda">
-        <article className="metric-card">
+        <article className="metric-card accent">
           <span>Consultas hoje</span>
           <strong>{appointments.length}</strong>
         </article>
@@ -364,13 +412,16 @@ function Dashboard() {
       <section className="split-grid">
         <article className="panel">
           <div className="panel-heading">
-            <h2>Agenda de hoje</h2>
+            <div>
+              <h2>Agenda de hoje</h2>
+              <p className="muted">Pacientes em ordem de horário</p>
+            </div>
             {loading && <span className="muted">Atualizando...</span>}
           </div>
           {error ? <p className="alert error">{error}</p> : <AppointmentList appointments={appointments} />}
         </article>
 
-        <article className="panel highlight-panel">
+        <article className="next-panel">
           <span className="eyebrow">Próxima consulta</span>
           {nextAppointment ? (
             <>
@@ -420,7 +471,10 @@ function Agenda() {
 
       <section className="panel">
         <div className="panel-heading">
-          <h2>{formatDate(date)}</h2>
+          <div>
+            <h2>{formatDate(date)}</h2>
+            <p className="muted">{appointments.length} consulta(s) encontradas</p>
+          </div>
           {loading && <span className="muted">Carregando...</span>}
         </div>
         {error ? <p className="alert error">{error}</p> : <AppointmentList appointments={appointments} />}
@@ -495,7 +549,7 @@ function RegistrarAusencia() {
       />
 
       <section className="split-grid wide-left">
-        <form className="panel" onSubmit={handleSubmit}>
+        <form className="panel absence-panel" onSubmit={handleSubmit}>
           <div className="panel-heading">
             <div>
               <h2>Consultas afetadas</h2>
@@ -524,7 +578,7 @@ function RegistrarAusencia() {
 
           {feedback && <p className={`alert ${feedback.type}`}>{feedback.text}</p>}
 
-          <button className="primary-button" disabled={submitting || !selectedIds.length} type="submit">
+          <button className="primary-button submit-action" disabled={submitting || !selectedIds.length} type="submit">
             {submitting ? 'Registrando...' : `Registrar ${selectedIds.length} ausência(s)`}
           </button>
         </form>
