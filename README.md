@@ -24,9 +24,9 @@ A solução atua como uma ponte digital para mitigar falhas de comunicação, ga
 * **🔄 Sincronização de Agenda:** Atualização em tempo real do status da clínica para os usuários conectados.
 * **👥 Portais Dedicados:** Visões específicas e seguras baseadas no perfil de usuário (Paciente, Médico e Administração da Clínica).
 
-## 🛠 Tecnologias Utilizadas (Exemplo - Adapte conforme seu projeto)
+## 🛠 Tecnologias Utilizadas 
 
-* **Frontend (Mobile):** React Native / Flutter /
+* **Frontend (Mobile):** React Native 
 * **Backend:** Node.js
-* **Banco de Dados:** SQLite / PostgreSQL / Firestore
-* **Mensageria/Notificações:** Firebase / WhatsApp API
+* **Banco de Dados:** SQLite 
+* **Mensageria/Notificações:** WhatsApp API
